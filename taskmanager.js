@@ -4,7 +4,7 @@ const dbName = "taskmanager";
 const connectionUrl = "mongodb://127.0.0.1:27018"
 
 
-MongoClient.connect(connectionUrl, { useNewUrlParser: true }, ( error, client ) => {
+MongoClient.connect(connectionUrl, { useUnifiedTopology: true }, ( error, client ) => {
 
     if (error !== null && error !== undefined) {
         return console.log("Mongo client error", error);
