@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../models/user');
+const Task = require('../models/task');
 const routers = express.Router();
 const bcryptjs = require('bcryptjs');
 const auth = require('../middleware/auth')
@@ -98,5 +99,15 @@ routers.patch("/user", auth, async (req, res) => {
         res.status(400).send(error);
     }
 });
+
+routers.delete("/user", auth, async (req, res) => {
+    try {
+        await req.user.remove();
+        const tasks = await Task.remove( { creator: req.user._id} );
+        res.send();
+    } catch ( error ) {
+        res.status(400).send(error);
+    }
+})
 
 module.exports = routers;
