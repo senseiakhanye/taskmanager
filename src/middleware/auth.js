@@ -5,10 +5,11 @@ const auth = async (req, res, next) => {
     try {
         const token = req.header("Authorization").replace("Bearer ", "");
         const verify = jwt.verify(token, "testingwebtoken");
-        const user = await User.findOne( {_id: verify._id});
+        const user = await User.findOne( {_id: verify._id, 'tokens.token': token});
         if (user == null) {
             throw new Error("Please sign in.");
         }
+        req.token = token;
         req.user = user;
         next();
     } catch ( error ) {

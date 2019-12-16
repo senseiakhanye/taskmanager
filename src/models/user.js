@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
         trim: true,
         lowercase: true,
         required: true,
+        unique: true,
         validate(value) {
             if (!validator.isEmail(value)) {
                 throw new Error("Email is invalid");
@@ -34,12 +35,30 @@ const userSchema = mongoose.Schema({
         type: Number,
         default: 0,
         min: 0
-    }
+    },
+    tokens: [
+        {
+            token: {
+                type: String,
+                require: true
+            }
+        }
+    ]
 });
 
 userSchema.methods.createJsonWebToken = async function() {
     const token = jwt.sign( { _id: this._id} , 'testingwebtoken');
+    this.tokens.push( {token} );
+    this.save();
     return token;
+}
+
+userSchema.methods.toJSON = function() {
+    const user = this.toObject();
+
+    delete user.password;
+    delete user.tokens;
+    return user;
 }
 
 userSchema.statics.findByCredentials = async (email, password) => {
