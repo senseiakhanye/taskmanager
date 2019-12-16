@@ -2,14 +2,32 @@ const express = require('express');
 const User = require('../models/user');
 const routers = express.Router();
 const bcryptjs = require('bcryptjs');
+const auth = require('../middleware/auth')
 
-routers.get("/users", (req, res) => {
+routers.get("/users", auth, (req, res) => {
     User.find({}).then( (users) => {
         res.send(users);
     }).catch( (error) => {
         res.status(500).send(error);
     })
 });
+
+routers.get("/user", auth, (req, res) => {
+    res.send(req.user);
+})
+
+routers.post("/user/login", async (req, res) => {
+    try {
+        if (req.body.email == null || req.body.password == null) {
+            throw new Error("Invalid request");
+        }
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+        const token = await user.createJsonWebToken();
+        res.send({user, token});
+    } catch ( error ) {
+        res.status(400).send( {error: error.message});
+    }
+})
 
 routers.post("/user", async (req, res) => {
     try {
