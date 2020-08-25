@@ -1,5 +1,3 @@
-// thisisafunnypassword123
-//mongodb+srv://taskapp:<password>@cluster0.lyx66.azure.mongodb.net/test
 const express = require('express');
 const userRouters = require("./routers/user");
 const taskRoutes = require("./routers/task");
