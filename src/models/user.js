@@ -87,9 +87,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 }
 
 userSchema.pre("save", async function (next) {
-    console.log(this);
     if (this.isModified('password')) {
-        console.log("Is modified");
         this.password = await bcryptjs.hash(this.password, 8);
     } else {
         console.log("Is not modified");

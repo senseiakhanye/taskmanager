@@ -67,7 +67,7 @@ routers.post("/user/signup", async (req, res) => {
             return res.status(400).send("User not created");
         }
         sendConfirmEmail(user.email, user.name);
-        return res.send(user);
+        return res.status(201).send(user);
     }
     catch (error) {
         res.status(400).send(error);
