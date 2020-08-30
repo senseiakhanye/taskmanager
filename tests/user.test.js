@@ -65,4 +65,19 @@ test("Authorised user should get user info", async () => {
         .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
         .send()
         .expect(200);
-})
+});
+
+test("Unauthorised user should not delete accout", async () => {
+    await request(app)
+            .delete("/user")
+            .send().expect(401);
+});
+
+test("Authorised user can delete profile", async () => {
+    await request(app)
+            .delete("/user")
+            .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+            .send()
+            .expect(200);
+});
+
