@@ -1,11 +1,19 @@
 const request = require('supertest');
 const app = require('../src/app');
 const User = require('../src/models/user');
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+
+const userOneId = new mongoose.Types.ObjectId;
 
 const userOne = {
+    _id: userOneId,
     name: 'Testing',
     email: 'test@test.com',
-    password: 'thisisatest'
+    password: 'thisisatest',
+    tokens: [{
+        token: jwt.sign({_id: userOneId }, process.env.JWT_SECRET)
+    }]
 }
 
 beforeEach(async () => {
@@ -45,3 +53,16 @@ test("Existing User with wrong password should not work", async () => {
         password: `${userOne.password}123`
     }).expect(400);
 });
+
+
+test("User without a valid token should not get user", async () => {
+    await request(app).get("/user").send().expect(401);
+});
+
+test("Authorised user should get user info", async () => {
+    await request(app)
+        .get("/user")
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send()
+        .expect(200);
+})
