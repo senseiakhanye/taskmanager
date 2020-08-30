@@ -11,7 +11,6 @@ routers.get("/tasks", auth, async (req, res) => {
                 match.completed = req.query[key].toLowerCase() === "true"
             }
         });
-        console.log(match);
         await req.user.populate({
             path: 'tasks',
             match
@@ -29,7 +28,7 @@ routers.post("/task", auth, (req, res) => {
     })
 
     task.save().then( () => {
-        res.send(task);
+        res.status(201).send(task);
     }).catch( (error) => {
         res.status(400).send(error);
     })

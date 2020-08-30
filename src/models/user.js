@@ -90,7 +90,7 @@ userSchema.pre("save", async function (next) {
     if (this.isModified('password')) {
         this.password = await bcryptjs.hash(this.password, 8);
     } else {
-        console.log("Is not modified");
+        // console.log("Is not modified");
     }
     next();
 });
