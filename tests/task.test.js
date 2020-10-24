@@ -35,6 +35,7 @@ test("Unauthonticated user should not get tasks", async () => {
         .expect(401);
 });
 
-test("Authorised user should not delete tasks not belonging to the user", async () => {
-
-})
+// test("Authorised user should not delete tasks not belonging to the user", async () => {
+//     await request(app)
+//         .delete("/tasks")
+// })
