@@ -3,12 +3,22 @@ const Task = require('../models/task');
 const auth = require('../middleware/auth');
 const routers = express.Router();
 
-routers.get("/tasks", auth, (req, res) => {
-    Task.find({ creator: req.user._id}).then( (tasks) => {
-        res.send(tasks);
-    }).catch( (error) => {
-        res.status(500).send(error);
-    })
+routers.get("/tasks", auth, async (req, res) => {
+    try {
+        const match = {};
+        Object.keys(req.query).forEach(key => {
+            if (key.toLowerCase() === "completed") {
+                match.completed = req.query[key].toLowerCase() === "true"
+            }
+        });
+        await req.user.populate({
+            path: 'tasks',
+            match
+        }).execPopulate();
+        res.send(req.user.tasks);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
 routers.post("/task", auth, (req, res) => {
@@ -18,8 +28,16 @@ routers.post("/task", auth, (req, res) => {
     })
 
     task.save().then( () => {
-        res.send(task);
+        res.status(201).send(task);
     }).catch( (error) => {
+        res.status(400).send(error);
+    })
+})
+
+routers.delete("/tasks", auth, (req, res) => {
+    Task.deleteMany({ creator: req.user._id}).then( () => {
+        res.send({ok: true});
+    }).catch( error => {
         res.status(400).send(error);
     })
 })
